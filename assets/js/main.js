@@ -110,6 +110,41 @@
         profil.addEventListener('change', adapter);
         adapter();
     }
+    // Liens « Organiser une visite » / « Proposer nos glaces » : pas de rechargement,
+    // on présélectionne le profil dans le formulaire et on y fait défiler la page.
+    function allerAuFormulaire(valeur) {
+        var cible = document.getElementById('contact');
+        if (!form || !cible) return false;
+        var profil = form.querySelector('[name=profil]');
+        if (valeur && profil.querySelector('option[value="' + valeur + '"]')) {
+            profil.value = valeur;
+            profil.dispatchEvent(new Event('change'));
+        }
+        cible.scrollIntoView({ behavior: reduit ? 'auto' : 'smooth', block: 'start' });
+        window.setTimeout(function () { profil.focus({ preventScroll: true }); }, reduit ? 0 : 700);
+        return true;
+    }
+    document.addEventListener('click', function (e) {
+        var a = e.target.closest('a[href*="profil="]');
+        if (!a) return;
+        var m = a.getAttribute('href').match(/profil=([a-z]+)/);
+        if (m && allerAuFormulaire(m[1])) e.preventDefault();
+    });
+    // Arrivée directe avec ?profil=… : le défilement initial est faussé par les images qui se chargent, on le refait une fois la page prête
+    if (/[?&]profil=/.test(location.search) && form) {
+        window.addEventListener('load', function () {
+            var m = location.search.match(/profil=([a-z]+)/);
+            allerAuFormulaire(m && m[1]);
+            // Les images « lazy » qui se chargent au-dessus décalent la page : on recale deux fois
+            [900, 2200].forEach(function (d) {
+                window.setTimeout(function () {
+                    var cible = document.getElementById('contact');
+                    if (Math.abs(cible.getBoundingClientRect().top - 80) > 20) window.scrollTo(0, cible.getBoundingClientRect().top + window.scrollY - 80);
+                }, d);
+            });
+        });
+    }
+
     var alerte = document.getElementById('alerte-contact');
     if (alerte) alerte.focus({ preventScroll: false });
 
