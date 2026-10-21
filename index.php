@@ -126,26 +126,23 @@ $tarifs = $mode === 'grille' ? grille_tarifs() : [];
                 <figcaption><span>Noisette</span> notre doyenne espiègle</figcaption>
             </figure>
 
-            <ol class="chapitres">
-                <li class="chapitre reveal">
-                    <span class="chapitre-num" aria-hidden="true">01</span>
-                    <h3>Un havre aux portes des Gorges du Tarn</h3>
-                    <p>Bienvenue à la <strong>Ferme du Tensonnieu</strong>, un havre de paix où nous vous invitons à découvrir l'histoire de Noisette et de nos glaces artisanales.</p>
+            <ol class="chapitres" data-chapitres>
+                <li class="chevre-marcheuse" aria-hidden="true"><span>🐐</span></li>
+                <li class="chapitre chapitre--1 reveal">
+                    <span class="chapitre-badge" aria-hidden="true"><span class="chapitre-icone">🏞️</span><b>01</b></span>
+                    <div class="chapitre-corps"><h3>Un havre aux portes des Gorges du Tarn</h3><p>Bienvenue à la <strong>Ferme du Tensonnieu</strong>, un havre de paix où nous vous invitons à découvrir l'histoire de Noisette et de nos glaces artisanales.</p></div>
                 </li>
-                <li class="chapitre reveal">
-                    <span class="chapitre-num" aria-hidden="true">02</span>
-                    <h3>Une chevrette, un seau, une idée folle</h3>
-                    <p>Noisette, chevrette espiègle, a annoncé le commencement d'un projet innovant : <strong>des glaces au lait de chèvre</strong>. Nos biquettes alpines et anglo-nubiennes, élevées avec soin, fournissent un lait riche, base de créations alliant onctuosité et naturalité.</p>
+                <li class="chapitre chapitre--2 reveal">
+                    <span class="chapitre-badge" aria-hidden="true"><span class="chapitre-icone">🪣</span><b>02</b></span>
+                    <div class="chapitre-corps"><h3>Une chevrette, un seau, une idée folle</h3><p>Noisette, chevrette espiègle, a annoncé le commencement d'un projet innovant : <strong>des glaces au lait de chèvre</strong>. Nos biquettes alpines et anglo-nubiennes, élevées avec soin, fournissent un lait riche, base de créations alliant onctuosité et naturalité.</p></div>
                 </li>
-                <li class="chapitre reveal">
-                    <span class="chapitre-num" aria-hidden="true">03</span>
-                    <h3>La gourmandise rime avec authenticité</h3>
-                    <p>Une alternative savoureuse aux glaces conventionnelles, grâce à notre savoir-faire traditionnel et notre engagement pour la qualité.</p>
+                <li class="chapitre chapitre--3 reveal">
+                    <span class="chapitre-badge" aria-hidden="true"><span class="chapitre-icone">🍦</span><b>03</b></span>
+                    <div class="chapitre-corps"><h3>La gourmandise rime avec authenticité</h3><p>Une alternative savoureuse aux glaces conventionnelles, grâce à notre savoir-faire traditionnel et notre engagement pour la qualité.</p></div>
                 </li>
-                <li class="chapitre reveal">
-                    <span class="chapitre-num" aria-hidden="true">04</span>
-                    <h3>Le respect du vivant, à chaque geste</h3>
-                    <p>Un <strong>stabilisant biologique</strong> à base de farine de lin et de fibres végétales, et des chèvres qui se délectent d'une <strong>alimentation biologique</strong> pour un lait et une crème supérieurs.</p>
+                <li class="chapitre chapitre--4 reveal">
+                    <span class="chapitre-badge" aria-hidden="true"><span class="chapitre-icone">🌿</span><b>04</b></span>
+                    <div class="chapitre-corps"><h3>Le respect du vivant, à chaque geste</h3><p>Un <strong>stabilisant biologique</strong> à base de farine de lin et de fibres végétales, et des chèvres qui se délectent d'une <strong>alimentation biologique</strong> pour un lait et une crème supérieurs.</p></div>
                 </li>
             </ol>
         </div>

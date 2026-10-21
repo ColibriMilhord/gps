@@ -20,7 +20,7 @@
     surDefilement();
 
     // Échap ferme le menu
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && nav && nav.classList.contains('ouvert')) { nav.classList.remove('ouvert'); bouton.setAttribute('aria-expanded', 'false'); entete.classList.remove('menu-ouvert'); bouton.focus(); } });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && nav && nav.classList.contains('ouvert')) { nav.classList.remove('ouvert'); bouton.setAttribute('aria-expanded', 'false'); entete.classList.remove('menu-ouvert'); document.body.classList.remove('menu-ouvert'); bouton.focus(); } });
     // Menu mobile
     var bouton = document.querySelector('.nav-toggle');
     var nav = document.getElementById('nav-principal');
@@ -28,10 +28,10 @@
         bouton.addEventListener('click', function () {
             var ouvert = nav.classList.toggle('ouvert');
             bouton.setAttribute('aria-expanded', ouvert);
-            entete.classList.toggle('menu-ouvert', ouvert);
+            entete.classList.toggle('menu-ouvert', ouvert); document.body.classList.toggle('menu-ouvert', ouvert);
         });
         nav.addEventListener('click', function (e) {
-            if (e.target.tagName === 'A') { nav.classList.remove('ouvert'); bouton.setAttribute('aria-expanded', 'false'); entete.classList.remove('menu-ouvert'); }
+            if (e.target.tagName === 'A') { nav.classList.remove('ouvert'); bouton.setAttribute('aria-expanded', 'false'); entete.classList.remove('menu-ouvert'); document.body.classList.remove('menu-ouvert'); }
         });
     }
 
@@ -80,6 +80,21 @@
             if (r.bottom < 0 || r.top > window.innerHeight) return;
             portrait.style.transform = 'translateY(' + ((r.top / window.innerHeight) * -24) + 'px) scale(1.08)';
         }, { passive: true });
+    }
+
+    // La chèvre trotte le long des 4 étapes au fil du défilement
+    var liste = document.querySelector('[data-chapitres]');
+    var chevre = liste && liste.querySelector('.chevre-marcheuse');
+    if (chevre && !reduit) {
+        var placer = function () {
+            var r = liste.getBoundingClientRect();
+            var p = (window.innerHeight * 0.55 - r.top) / r.height;
+            p = Math.max(0, Math.min(1, p));
+            chevre.style.top = (p * (r.height - 32)) + 'px';
+        };
+        window.addEventListener('scroll', placer, { passive: true });
+        window.addEventListener('resize', placer);
+        placer();
     }
 
     // Formulaire de contact : champs adaptés au profil choisi
