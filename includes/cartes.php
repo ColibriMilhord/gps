@@ -22,6 +22,13 @@ function carte_produit(array $p, string $dossierPhoto, string $mode): string {
             <h3><?= h($p['nom']) ?></h3>
             <?php if (!empty($p['parfums'])): ?><p class="carte-parfums"><?= h($p['parfums']) ?></p><?php endif; ?>
             <?php if (!empty($p['description'])): ?><p><?= nl2br(h($p['description'])) ?></p><?php endif; ?>
+            <?php if (!empty($p['ingredients'])): ?>
+                <details class="carte-ingredients">
+                    <summary>Ingrédients</summary>
+                    <p><?= h(mb_strtoupper(mb_substr($p['ingredients'], 0, 1)) . mb_substr($p['ingredients'], 1)) ?>.</p>
+                    <?php if (!empty($p['poids'])): ?><p class="carte-poids">Poids net : <?= h($p['poids']) ?></p><?php endif; ?>
+                </details>
+            <?php endif; ?>
             <?php if (!empty($p['parts'])): ?><p class="carte-parts"><?= h($p['parts']) ?></p><?php endif; ?>
             <?php if ($mode === 'individuel' && $p['prix'] !== null && $p['prix'] !== ''): ?>
                 <p class="carte-prix"><?= h(prix_fr($p['prix'])) ?></p>

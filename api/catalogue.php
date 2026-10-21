@@ -12,7 +12,7 @@ $noel = ($R['noel_actif'] ?? '0') === '1';
 $mapper = function (array $l, string $dossier) use ($mode) {
     return [
         'id' => (int)$l['id'], 'nom' => $l['nom'], 'description' => $l['description'],
-        'parfums' => $l['parfums'] ?? null, 'parts' => $l['parts'] ?? null,
+        'parfums' => $l['parfums'] ?? null, 'ingredients' => $l['ingredients'] ?? null, 'poids' => $l['poids'] ?? null, 'parts' => $l['parts'] ?? null,
         'image' => upload_url($l['image'], $dossier), 'logo' => upload_url($l['logo'], 'logos'),
         'prix' => ($mode === 'individuel' && $l['prix'] !== null) ? (float)$l['prix'] : null,
     ];

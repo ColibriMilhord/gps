@@ -329,3 +329,9 @@ body.menu-ouvert::after { content: ""; position: fixed; inset: 0; background: rg
     .chevre-marcheuse span, .chapitre-icone { animation: none !important; }
     .chapitre.reveal { transform: none !important; }
 }
+
+/* Ingrédients repliables sur les cartes */
+.carte-ingredients { margin: .2rem 0 .8rem; font-size: .92rem; border-top: 1px dashed rgba(107,69,41,.35); padding-top: .5rem; }
+.carte-ingredients summary { cursor: pointer; font-weight: 700; color: var(--sauge-fonce); min-height: 32px; display: flex; align-items: center; }
+.carte-ingredients p { margin: .3rem 0 0 !important; font-size: .9rem !important; }
+.carte-poids { opacity: .8; }

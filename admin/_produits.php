@@ -39,6 +39,10 @@ function page_produits(string $table, string $titre, string $singulier, string $
                     'visible' => !empty($_POST['visible']) ? 1 : 0,
                     'ordre' => (int)($_POST['ordre'] ?? 0),
                 ];
+                if (!$estBuche) {
+                    $champs['ingredients'] = mb_substr(trim((string)($_POST['ingredients'] ?? '')), 0, 2000) ?: null;
+                    $champs['poids'] = mb_substr(trim((string)($_POST['poids'] ?? '')), 0, 60) ?: null;
+                }
                 if ($estBuche) {
                     $champs['parfums'] = mb_substr(trim((string)($_POST['parfums'] ?? '')), 0, 255);
                     $champs['parts'] = mb_substr(trim((string)($_POST['parts'] ?? '')), 0, 60);
@@ -94,6 +98,13 @@ function page_produits(string $table, string $titre, string $singulier, string $
         <div class="adm-grille2">
             <label>Parfums de la bûche <input name="parfums" maxlength="255" value="<?= $v('parfums') ?>" placeholder="ex. Miel · Fruits rouges"></label>
             <label>Nombre de parts <input name="parts" maxlength="60" value="<?= $v('parts') ?>" placeholder="ex. 6 parts"></label>
+        </div>
+        <?php endif; ?>
+        <?php if (!$estBuche): ?>
+        <div class="adm-grille2">
+            <label class="adm-large">Ingrédients <textarea name="ingredients" rows="3" placeholder="ex. pulpe de fraises, lait entier bio de nos chèvres, sucre…"><?= $v('ingredients') ?></textarea>
+                <small class="adm-aide">Affichés sur la carte, dans « Ingrédients » (sans le point final).</small></label>
+            <label>Poids net <input name="poids" maxlength="60" value="<?= $v('poids') ?>" placeholder="ex. 100 g / 140 ml"></label>
         </div>
         <?php endif; ?>
         <label>Description <textarea name="description" rows="3"><?= $v('description') ?></textarea></label>

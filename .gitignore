@@ -2,5 +2,6 @@ config.local.php
 uploads/glaces/*
 uploads/buches/*
 uploads/logos/*
-!uploads/logos/logo-miel.png
+!uploads/logos/logo-*.png
+!uploads/logos/logo-*.jpg
 !uploads/*/.gitkeep

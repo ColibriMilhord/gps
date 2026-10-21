@@ -212,15 +212,60 @@ function lien_carte(array $l): ?string {
     return $q === '' ? null : 'https://www.openstreetmap.org/search?query=' . rawurlencode($q);
 }
 
-/** Crée les tables ajoutées depuis la 1.0 si elles manquent (appelé depuis l'administration). */
+/**
+ * Met la base au niveau du code (idempotent, appelé par l'administration et au premier affichage public) :
+ *  - 1.1.0 : tables lieux / partenaires / messages ;
+ *  - 1.2.0 : colonnes ingrédients + poids sur les glaces, catalogue initial des parfums, coordonnées de la ferme.
+ * Le catalogue n'est injecté qu'une fois (drapeau catalogue_v12) : un parfum supprimé ensuite ne revient pas.
+ */
 function migrer_base(): void {
     $pdo = db(); if (!$pdo) return;
-    try { $pdo->query('SELECT 1 FROM messages LIMIT 1'); return; } catch (Throwable $e) {}
     try {
-        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-        $pdo->exec((string)file_get_contents(RACINE . '/sql/migration-1.1.0.sql'));
-        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        try { $pdo->query('SELECT 1 FROM messages LIMIT 1'); }
+        catch (Throwable $e) {
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+            $pdo->exec((string)file_get_contents(RACINE . '/sql/migration-1.1.0.sql'));
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        }
+        try { $pdo->query('SELECT ingredients, poids FROM glaces LIMIT 1'); }
+        catch (Throwable $e) {
+            $pdo->exec('ALTER TABLE glaces ADD COLUMN ingredients TEXT NULL');
+            $pdo->exec('ALTER TABLE glaces ADD COLUMN poids VARCHAR(60) NULL');
+        }
+        $f = $pdo->prepare("SELECT valeur FROM settings_site WHERE cle = 'catalogue_v12'"); $f->execute();
+        if ($f->fetchColumn() === '1') return;
+
+        $catalogue = require RACINE . '/includes/catalogue-initial.php';
+        $cherche = $pdo->prepare('SELECT id, ingredients, logo FROM glaces WHERE nom LIKE ? ORDER BY id LIMIT 1');
+        foreach ($catalogue as $g) {
+            $cherche->execute([$g['recherche'] ?? $g['nom']]);
+            if ($ex = $cherche->fetch()) {   // parfum déjà saisi : on complète sans écraser
+                $pdo->prepare('UPDATE glaces SET ingredients = COALESCE(ingredients, ?), poids = COALESCE(poids, ?), logo = COALESCE(logo, ?) WHERE id = ?')
+                    ->execute([$g['ingredients'], POIDS_POT, $g['logo'], $ex['id']]);
+            } else {
+                $pdo->prepare('INSERT INTO glaces (nom, ingredients, poids, logo, ordre, visible) VALUES (?, ?, ?, ?, ?, 1)')
+                    ->execute([$g['nom'], $g['ingredients'], POIDS_POT, $g['logo'], $g['ordre']]);
+            }
+        }
+        // Coordonnées de la ferme (étiquettes) : seulement si les champs sont encore vides
+        foreach (['telephone' => '06 51 10 67 33', 'email' => 'contact@gaecdupointsublime.com'] as $c => $v) {
+            $pdo->prepare("UPDATE settings_site SET valeur = ? WHERE cle = ? AND (valeur IS NULL OR valeur = '')")->execute([$v, $c]);
+        }
+        $pdo->prepare("UPDATE settings_site SET valeur = ? WHERE cle = 'adresse' AND valeur LIKE 'Ferme du Tensonnieu, aux portes%'")
+            ->execute(['Ferme du Tensonnieu — 12 rue Jules Ricard, 48500 Massegros Causses Gorges']);
+        reglage_enregistrer('catalogue_v12', '1');
     } catch (Throwable $e) { error_log('migration: ' . $e->getMessage()); }
+}
+
+/** Au premier affichage public après une mise à jour, applique la migration (une requête légère ensuite). */
+function migrer_si_besoin(): void {
+    static $fait = false; if ($fait) return; $fait = true;
+    if (!($pdo = db())) return;
+    try {
+        $st = $pdo->prepare("SELECT valeur FROM settings_site WHERE cle = 'catalogue_v12'"); $st->execute();
+        if ($st->fetchColumn() === '1') return;
+    } catch (Throwable $e) { /* table absente : sera créée par l'installation */ return; }
+    migrer_base();
 }
 
 /** Profils du formulaire de contact. 'noel' = proposé seulement si le module Noël est actif. */

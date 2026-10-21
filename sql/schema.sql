@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS glaces (
     description TEXT NULL,
     image       VARCHAR(255) NULL,
     logo        VARCHAR(255) NULL,
+    ingredients TEXT NULL,
+    poids       VARCHAR(60) NULL,
     prix        DECIMAL(6,2) NULL,
     visible     TINYINT(1) NOT NULL DEFAULT 1,
     ordre       INT NOT NULL DEFAULT 0,
@@ -76,9 +78,7 @@ INSERT IGNORE INTO settings_site (cle, valeur) VALUES
     ('adresse',       'Ferme du Tensonnieu, aux portes des Gorges du Tarn'),
     ('marches',       'Marchés d''Aveyron et de Lozère');
 
--- Exemple de parfum (le logo « Miel » est fourni dans uploads/logos/)
-INSERT INTO glaces (nom, description, logo, prix, ordre) VALUES
-    ('Crème glacée Miel', 'Une crème glacée onctueuse au lait de nos chèvres, parfumée au miel.', 'logo-miel.png', 3.50, 1);
+-- Les parfums (ingrédients, logos) sont injectés automatiquement au premier affichage : voir includes/catalogue-initial.php
 INSERT INTO tarifs (libelle, prix, ordre) VALUES
     ('Pot 100 ml', 3.50, 1), ('Pot 500 ml', 9.00, 2), ('Pot 1 L', 16.00, 3);
 

@@ -6,6 +6,7 @@ require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/contact.php';
 require_once __DIR__ . '/includes/cartes.php';
 
+migrer_si_besoin();
 $noel = (reglages()['noel_actif'] ?? '0') === '1';
 $resContact = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['contact'])) {
