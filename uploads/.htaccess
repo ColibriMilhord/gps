@@ -1,0 +1,7 @@
+# Aucune exécution de script dans le dossier des fichiers envoyés
+php_flag engine off
+RemoveHandler .php .phtml .php3 .php4 .php5 .phar
+<FilesMatch "\.(php|phtml|phar|php\d?)$">
+    Require all denied
+</FilesMatch>
+Options -Indexes
