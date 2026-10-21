@@ -19,6 +19,8 @@
     window.addEventListener('scroll', surDefilement, { passive: true });
     surDefilement();
 
+    // Échap ferme le menu
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && nav && nav.classList.contains('ouvert')) { nav.classList.remove('ouvert'); bouton.setAttribute('aria-expanded', 'false'); entete.classList.remove('menu-ouvert'); bouton.focus(); } });
     // Menu mobile
     var bouton = document.querySelector('.nav-toggle');
     var nav = document.getElementById('nav-principal');
@@ -26,9 +28,10 @@
         bouton.addEventListener('click', function () {
             var ouvert = nav.classList.toggle('ouvert');
             bouton.setAttribute('aria-expanded', ouvert);
+            entete.classList.toggle('menu-ouvert', ouvert);
         });
         nav.addEventListener('click', function (e) {
-            if (e.target.tagName === 'A') { nav.classList.remove('ouvert'); bouton.setAttribute('aria-expanded', 'false'); }
+            if (e.target.tagName === 'A') { nav.classList.remove('ouvert'); bouton.setAttribute('aria-expanded', 'false'); entete.classList.remove('menu-ouvert'); }
         });
     }
 
@@ -47,13 +50,53 @@
     var dlg = document.getElementById('dialogue-logo');
     document.addEventListener('click', function (e) {
         var b = e.target.closest('.carte-logo');
-        if (!b || !dlg || !dlg.showModal) return;
+        if (!b || !dlg || !dlg.showModal) return;   // sans <dialog> : le lien ouvre l'image
+        e.preventDefault();
         dlg.querySelector('img').src = b.dataset.logo;
         dlg.querySelector('img').alt = 'Logo ' + b.dataset.titre;
         dlg.querySelector('p').textContent = b.dataset.titre;
         dlg.showModal();
     });
     if (dlg) dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+
+    // Vidéo d'ambiance : bouton pause (accessibilité) ; arrêtée si l'utilisateur réduit les animations
+    var video = document.querySelector('.hero video');
+    var pause = document.querySelector('.video-pause');
+    if (video && pause) {
+        if (reduit) { video.pause(); pause.hidden = true; }
+        pause.addEventListener('click', function () {
+            var enPause = video.paused ? (video.play(), false) : (video.pause(), true);
+            pause.setAttribute('aria-pressed', enPause);
+            pause.textContent = enPause ? '▶' : '⏸';
+            pause.setAttribute('aria-label', enPause ? 'Relancer la vidéo' : 'Mettre la vidéo en pause');
+        });
+    }
+
+    // Portrait de Noisette : léger décalage au défilement
+    var portrait = document.querySelector('[data-portrait] img');
+    if (portrait && !reduit) {
+        window.addEventListener('scroll', function () {
+            var r = portrait.parentElement.getBoundingClientRect();
+            if (r.bottom < 0 || r.top > window.innerHeight) return;
+            portrait.style.transform = 'translateY(' + ((r.top / window.innerHeight) * -24) + 'px) scale(1.08)';
+        }, { passive: true });
+    }
+
+    // Formulaire de contact : champs adaptés au profil choisi
+    var form = document.querySelector('.form-contact');
+    if (form) {
+        var profil = form.querySelector('[name=profil]');
+        var adapter = function () {
+            form.querySelectorAll('[data-pour]').forEach(function (el) {
+                var visible = !profil.value || el.dataset.pour.split(' ').indexOf(profil.value) !== -1;
+                el.hidden = !visible;
+            });
+        };
+        profil.addEventListener('change', adapter);
+        adapter();
+    }
+    var alerte = document.getElementById('alerte-contact');
+    if (alerte) alerte.focus({ preventScroll: false });
 
     // Flocons de Noël (uniquement si le module Noël est actif)
     if (document.body.classList.contains('noel') && !reduit) {

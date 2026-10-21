@@ -13,9 +13,9 @@ function carte_produit(array $p, string $dossierPhoto, string $mode): string {
                 <img src="assets/img/logo.png" alt="" loading="lazy" class="placeholder">
             <?php endif; ?>
             <?php if ($photo && $logo): ?>
-                <button type="button" class="carte-logo" data-logo="<?= h($logo) ?>" data-titre="<?= h($p['nom']) ?>" aria-label="Voir le logo de <?= h($p['nom']) ?>">
+                <a class="carte-logo" href="<?= h($logo) ?>" target="_blank" rel="noopener" data-logo="<?= h($logo) ?>" data-titre="<?= h($p['nom']) ?>" aria-label="Voir le logo de <?= h($p['nom']) ?>">
                     <img src="<?= h($logo) ?>" alt="" loading="lazy">
-                </button>
+                </a>
             <?php endif; ?>
         </div>
         <div class="carte-corps">

@@ -43,11 +43,12 @@ $ogImage = SITE_URL . '/assets/img/hero-poster.jpg';
         <span class="brand-text">Les Sublimes</span>
     </a>
     <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-principal"><span></span><span></span><span></span></button>
-    <nav id="nav-principal" class="nav-principal">
+    <nav id="nav-principal" class="nav-principal" aria-label="Navigation principale">
         <a href="./#glaces">Nos glaces</a>
         <?php if ($noel): ?><a href="./#buches" class="nav-noel">🎄 Bûches de Noël</a><?php endif; ?>
-        <a href="./#ferme">Notre ferme</a>
-        <a href="./#contact">Nous trouver</a>
+        <a href="./#ferme">Notre histoire</a>
+        <a href="./#retrouver">Nous retrouver</a>
+        <a href="./#contact" class="nav-contact">Contact</a>
     </nav>
 </header>
 

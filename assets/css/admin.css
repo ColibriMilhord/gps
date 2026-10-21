@@ -50,3 +50,13 @@ fieldset { border: 0; padding: 0; margin: 0 0 1rem; }
 .adm-interrupteur input:checked + .piste::after { left: 29px; }
 .adm-interrupteur input:focus-visible + .piste { outline: 3px solid #1f5a3c; }
 @media (max-width: 640px) { .adm-grille2, .adm-grille3 { grid-template-columns: 1fr; } }
+
+.adm-large { grid-column: 1 / -1; }
+.adm-form select { display: block; width: 100%; margin-top: .25rem; padding: .6rem .7rem; font: inherit; border: 1px solid #c9c2b2; border-radius: 8px; background: #fff; }
+.adm-form small.adm-aide { display: block; font-weight: 400; }
+.adm-badge { background: var(--fruit); color: #fff; border-radius: 999px; padding: 0 .5rem; font-size: .8rem; font-weight: 700; }
+.adm-message--nouveau { border-left: 6px solid var(--fruit); }
+.adm-message header { display: flex; flex-wrap: wrap; gap: .4rem .8rem; align-items: center; }
+.adm-message time { margin-left: auto; color: #6e675a; font-size: .88rem; }
+.adm-puce { background: #e2efd8; color: #2f4a21; border-radius: 999px; padding: .1rem .7rem; font-size: .82rem; }
+:focus-visible { outline: 3px solid #1b4fd8; outline-offset: 2px; }

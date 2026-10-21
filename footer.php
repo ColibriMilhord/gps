@@ -6,6 +6,7 @@
         <p class="footer-tag">Les Sublimes, les glaces qui font bêler de plaisir</p>
         <div class="footer-links">
             <a href="mentions-legales.php">Mentions légales</a>
+            <a href="./#retrouver">Où nous retrouver</a>
             <a href="./#contact">Contact</a>
             <a href="admin/">Administration</a>
         </div>

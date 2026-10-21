@@ -18,3 +18,9 @@ Stack : HTML/CSS/JS vanilla, PHP (PDO), MySQL. Prêt pour un hébergement mutual
 - API JSON publique en lecture : `api/catalogue.php`.
 
 Incrémenter `version.php` à chaque modification visible.
+
+## v1.1.0
+- **Où nous retrouver** (admin > Où nous retrouver) : ferme, marchés, événements. Dates passées masquées automatiquement ; le prochain rendez-vous est mis en avant sous l'accueil.
+- **Partenaires** (admin > Partenaires) : boutiques/restaurants qui vendent les glaces.
+- **Formulaire de contact** avec profils (restaurant, boutique, partenaire, visite, commande de glaces, bûche si Noël actif) ; messages dans admin > Messages + e-mail de notification si un courriel est renseigné.
+- Mise à jour d'une base 1.0 : automatique à la première connexion à l'admin (ou importer `sql/migration-1.1.0.sql`).

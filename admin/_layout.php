@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../includes/bootstrap.php';
 
 function admin_entete(string $titre, string $actif = ''): void {
-    $menu = ['index' => 'Tableau de bord', 'glaces' => 'Glaces', 'buches' => 'Bûches de Noël', 'tarifs' => 'Grille tarifaire'];
+    $menu = ['index' => 'Tableau de bord', 'glaces' => 'Glaces', 'buches' => 'Bûches de Noël', 'tarifs' => 'Grille tarifaire', 'lieux' => 'Où nous retrouver', 'partenaires' => 'Partenaires', 'messages' => 'Messages'];
     $f = flash();
     ?><!DOCTYPE html>
 <html lang="fr"><head>
@@ -17,7 +17,7 @@ function admin_entete(string $titre, string $actif = ''): void {
 <header class="adm-bar">
     <a class="adm-brand" href="index.php"><img src="../assets/img/logo.png" alt="" width="36" height="36"> Les Sublimes · Admin</a>
     <nav>
-        <?php foreach ($menu as $k => $l): ?><a href="<?= $k ?>.php" class="<?= $k === $actif ? 'actif' : '' ?>"><?= h($l) ?></a><?php endforeach; ?>
+        <?php foreach ($menu as $k => $l): ?><a href="<?= $k ?>.php" class="<?= $k === $actif ? 'actif' : '' ?>"><?= h($l) ?><?php if ($k === 'messages' && ($nb = messages_non_lus())): ?> <span class="adm-badge"><?= $nb ?></span><?php endif; ?></a><?php endforeach; ?>
         <a href="../" target="_blank" rel="noopener">Voir le site ↗</a>
         <a href="logout.php">Déconnexion</a>
     </nav>
@@ -46,4 +46,9 @@ function base_exigee(): PDO {
         admin_pied(); exit;
     }
     return $pdo;
+}
+
+/** Nombre de messages non lus (0 si la table n'existe pas encore). */
+function messages_non_lus(): int {
+    try { return (int)db()->query('SELECT COUNT(*) FROM messages WHERE lu = 0')->fetchColumn(); } catch (Throwable $e) { return 0; }
 }

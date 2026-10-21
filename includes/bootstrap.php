@@ -125,6 +125,7 @@ function csrf_verifier(): void {
 function admin_connecte(): bool { session_demarrer(); return !empty($_SESSION['admin_id']); }
 function admin_exiger(): void {
     if (!admin_connecte()) { header('Location: login.php'); exit; }
+    migrer_base();
     header('X-Robots-Tag: noindex, nofollow');
 }
 
@@ -163,4 +164,75 @@ function image_supprimer(?string $fichier, string $dossier): void {
     if (!$fichier || $fichier !== basename($fichier)) return;
     $p = RACINE . '/uploads/' . $dossier . '/' . $fichier;
     if (is_file($p)) @unlink($p);
+}
+
+// ------------------------------------------------------------
+//  v1.1.0 — rendez-vous (lieux), partenaires, migration
+// ------------------------------------------------------------
+const TYPES_LIEU = ['ferme' => 'À la ferme', 'marche' => 'Marché', 'evenement' => 'Événement'];
+const CATEGORIES_PARTENAIRE = ['boutique' => 'Boutique', 'restaurant' => 'Restaurant', 'epicerie' => 'Épicerie', 'autre' => 'Autre'];
+
+/** « sam. 25 octobre 2026 » (sans dépendre de l'extension intl). */
+function date_fr(?string $ymd, bool $annee = true): string {
+    if (!$ymd || !($t = strtotime($ymd))) return '';
+    $j = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'];
+    $m = ['', 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    return $j[(int)date('w', $t)] . ' ' . (int)date('j', $t) . ' ' . $m[(int)date('n', $t)] . ($annee ? ' ' . date('Y', $t) : '');
+}
+
+/** Phrase de date d'un rendez-vous : période, date unique ou récurrence. */
+function lieu_quand(array $l): string {
+    $d = $l['date_debut'] ?? null; $f = $l['date_fin'] ?? null;
+    if ($d && $f && $f !== $d) return 'Du ' . date_fr($d, false) . ' au ' . date_fr($f);
+    if ($d) return date_fr($d);
+    return (string)($l['recurrence'] ?? '');
+}
+
+/** Rendez-vous visibles et non terminés : datés d'abord (chronologique), puis permanents. */
+function lieux_a_venir(): array {
+    if (!($pdo = db())) return [];
+    try {
+        $st = $pdo->prepare('SELECT * FROM lieux WHERE visible = 1
+            AND ((date_fin IS NOT NULL AND date_fin >= :j1) OR (date_fin IS NULL AND (date_debut IS NULL OR date_debut >= :j2)))
+            ORDER BY (date_debut IS NULL), date_debut, ordre, id');
+        $st->execute([':j1' => date('Y-m-d'), ':j2' => date('Y-m-d')]);
+        return $st->fetchAll();
+    } catch (Throwable $e) { error_log('lieux: ' . $e->getMessage()); return []; }
+}
+
+function partenaires_visibles(): array {
+    if (!($pdo = db())) return [];
+    try { return $pdo->query('SELECT * FROM partenaires WHERE visible = 1 ORDER BY ordre, nom')->fetchAll(); }
+    catch (Throwable $e) { error_log('partenaires: ' . $e->getMessage()); return []; }
+}
+
+/** Lien carte (recherche) pour une adresse. */
+function lien_carte(array $l): ?string {
+    $q = trim(($l['adresse'] ?? '') . ' ' . ($l['ville'] ?? ''));
+    return $q === '' ? null : 'https://www.openstreetmap.org/search?query=' . rawurlencode($q);
+}
+
+/** Crée les tables ajoutées depuis la 1.0 si elles manquent (appelé depuis l'administration). */
+function migrer_base(): void {
+    $pdo = db(); if (!$pdo) return;
+    try { $pdo->query('SELECT 1 FROM messages LIMIT 1'); return; } catch (Throwable $e) {}
+    try {
+        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+        $pdo->exec((string)file_get_contents(RACINE . '/sql/migration-1.1.0.sql'));
+        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    } catch (Throwable $e) { error_log('migration: ' . $e->getMessage()); }
+}
+
+/** Profils du formulaire de contact. 'noel' = proposé seulement si le module Noël est actif. */
+function profils_contact(bool $noel): array {
+    $p = [
+        'restaurant' => 'Je suis restaurateur·rice',
+        'boutique'   => 'Je tiens une boutique ou une épicerie',
+        'partenaire' => 'Je veux travailler avec vous',
+        'visite'     => 'Je suis particulier et je veux visiter la ferme',
+        'glace'      => 'Je souhaite commander des glaces',
+    ];
+    if ($noel) $p['buche'] = 'Je souhaite commander une bûche de Noël';
+    $p['autre'] = 'Autre demande';
+    return $p;
 }

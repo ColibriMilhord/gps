@@ -26,6 +26,9 @@ admin_entete('Tableau de bord', 'index');
     <a class="adm-carte" href="glaces.php"><strong><?= $n('glaces') ?></strong> parfum(s) de glace</a>
     <a class="adm-carte" href="buches.php"><strong><?= $n('buches') ?></strong> bûche(s)</a>
     <a class="adm-carte" href="tarifs.php"><strong><?= $n('tarifs') ?></strong> ligne(s) de tarif</a>
+    <a class="adm-carte" href="lieux.php"><strong><?= $n('lieux') ?></strong> rendez-vous</a>
+    <a class="adm-carte" href="partenaires.php"><strong><?= $n('partenaires') ?></strong> partenaire(s)</a>
+    <a class="adm-carte" href="messages.php"><strong><?= messages_non_lus() ?></strong> message(s) non lu(s)</a>
 </div>
 
 <form method="post" class="adm-carte adm-form">
@@ -49,7 +52,7 @@ admin_entete('Tableau de bord', 'index');
     <h2>📍 Coordonnées</h2>
     <div class="adm-grille2">
         <label>Téléphone <input name="telephone" value="<?= h($R['telephone']) ?>"></label>
-        <label>Courriel <input type="email" name="email" value="<?= h($R['email']) ?>"></label>
+        <label>Courriel (reçoit aussi les messages du formulaire de contact) <input type="email" name="email" value="<?= h($R['email']) ?>"></label>
         <label>Adresse <input name="adresse" value="<?= h($R['adresse']) ?>"></label>
         <label>Marchés <input name="marches" value="<?= h($R['marches']) ?>"></label>
     </div>
