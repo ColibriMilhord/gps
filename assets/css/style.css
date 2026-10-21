@@ -271,11 +271,11 @@ body.menu-ouvert::after { content: ""; position: fixed; inset: 0; background: rg
 /* ---------- Sections bien distinctes (fond propre + vague de séparation) ---------- */
 :root { --fond-glaces: #fffaf0; --fond-noel: #fbe3dc; --fond-histoire: #f3e6bf; --fond-retrouver: #dfe8d1; --fond-contact: #4f6340; }
 .page-section { position: relative; }
-.page-section::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: clamp(34px, 5vw, 64px); z-index: 2; background: var(--prec, transparent); pointer-events: none;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 0H1200V30C1050 62 900 62 750 36C600 10 450 10 300 36C150 62 50 56 0 38Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
-            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 0H1200V30C1050 62 900 62 750 36C600 10 450 10 300 36C150 62 50 56 0 38Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; }
+.vague { position: absolute; top: -3px; left: 0; width: 100%; height: 44px; display: block; color: var(--prec, transparent); pointer-events: none; z-index: 2; }
+@media (min-width: 700px) { .vague { height: 54px; } }
+@media (min-width: 1100px) { .vague { height: 64px; } }
+.vague path { fill: currentColor; }
 #glaces { background: var(--fond-glaces) radial-gradient(circle at 1px 1px, rgba(141,160,122,.22) 1.5px, transparent 0) 0 0 / 26px 26px; }
-#glaces::before { display: none; }
 .section-noel { background: var(--fond-noel); --prec: var(--fond-glaces); }
 .section-histoire { background: radial-gradient(circle 360px at 0% 22%, rgba(141,160,122,.30), transparent 70%), radial-gradient(circle 340px at 100% 88%, rgba(176,52,76,.12), transparent 70%), var(--fond-histoire); --prec: var(--fond-glaces); }
 .section-noel + .section-histoire { --prec: var(--fond-noel); }

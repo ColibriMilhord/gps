@@ -82,6 +82,7 @@ $tarifs = $mode === 'grille' ? grille_tarifs() : [];
 
 <?php if ($noel): ?>
 <section class="page-section section-noel" id="buches">
+    <svg class="vague" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0H1200V30C1050 62 900 62 750 36C600 10 450 10 300 36C150 62 50 56 0 38Z"/></svg>
     <div class="container">
         <header class="section-titre reveal">
             <p class="surtitre">Fêtes de fin d'année</p>
@@ -107,6 +108,7 @@ $tarifs = $mode === 'grille' ? grille_tarifs() : [];
 <?php endif; ?>
 
 <section class="page-section section-histoire" id="ferme" aria-labelledby="titre-histoire">
+    <svg class="vague" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0H1200V30C1050 62 900 62 750 36C600 10 450 10 300 36C150 62 50 56 0 38Z"/></svg>
     <div class="container">
         <header class="section-titre reveal">
             <p class="surtitre">Notre histoire</p>
@@ -165,6 +167,7 @@ $tarifs = $mode === 'grille' ? grille_tarifs() : [];
 </section>
 
 <section class="page-section section-retrouver" id="retrouver" aria-labelledby="titre-retrouver">
+    <svg class="vague" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0H1200V30C1050 62 900 62 750 36C600 10 450 10 300 36C150 62 50 56 0 38Z"/></svg>
     <div class="container">
         <header class="section-titre reveal">
             <p class="surtitre">Où nous retrouver</p>
@@ -232,6 +235,7 @@ $tarifs = $mode === 'grille' ? grille_tarifs() : [];
 </section>
 
 <section class="page-section section-contact" id="contact" aria-labelledby="titre-contact">
+    <svg class="vague" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0H1200V30C1050 62 900 62 750 36C600 10 450 10 300 36C150 62 50 56 0 38Z"/></svg>
     <div class="container contact-grille">
         <div class="contact-intro reveal">
             <p class="surtitre">Contact</p>
