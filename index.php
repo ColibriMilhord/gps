@@ -12,7 +12,7 @@ $resContact = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['contact'])) {
     $resContact = contact_traiter($noel);   // redirige si tout est bon
 } elseif (isset($_GET['profil']) && isset(profils_contact($noel)[$_GET['profil']])) {
-    $resContact = ['valeurs' => ['profil' => $_GET['profil']]];   // lien « Devenir revendeur »
+    $resContact = ['valeurs' => ['profil' => $_GET['profil'], 'produit' => mb_substr((string)($_GET['produit'] ?? ''), 0, 190)]];   // lien « Devenir revendeur »
 }
 include 'header.php';
 $lieux = lieux_a_venir();
@@ -60,9 +60,10 @@ $tarifs = $mode === 'grille' ? grille_tarifs() : [];
             <p>Onctueuses, naturelles, faites avec le lait de nos biquettes et un stabilisant biologique à base de farine de lin et de fibres végétales.</p>
         </header>
         <?php if ($glaces): ?>
-            <div class="grille-cartes">
+            <div class="grille-cartes grille-cartes--glaces">
                 <?php foreach ($glaces as $g) echo carte_produit($g, 'glaces', $mode); ?>
             </div>
+            <p class="cta-section reveal"><a class="btn" href="#retrouver">Où goûter nos glaces ?</a></p>
         <?php else: ?>
             <p class="vide">Les parfums arrivent bientôt. Revenez nous voir !</p>
         <?php endif; ?>
@@ -91,8 +92,8 @@ $tarifs = $mode === 'grille' ? grille_tarifs() : [];
             <p><?= h($R['noel_message'] ?? '') ?></p>
         </header>
         <?php if ($buches): ?>
-            <div class="grille-cartes">
-                <?php foreach ($buches as $b) echo carte_produit($b, 'buches', $mode); ?>
+            <div class="grille-cartes grille-cartes--buches">
+                <?php foreach ($buches as $b) echo carte_produit($b, 'buches', $mode, true); ?>
             </div>
         <?php else: ?>
             <p class="vide">Nos bûches arrivent bientôt.</p>

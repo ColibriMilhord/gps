@@ -5,13 +5,13 @@ const STABILISANT = 'stabilisant bio (farine de lin et fibres végétales)';
 const POIDS_POT = '100 g / 140 ml';
 
 return [
-    ['nom' => 'Vanille',  'ordre' => 1,  'logo' => null,
+    ['nom' => 'Vanille',  'ordre' => 1,  'logo' => 'logo-vanille.jpg',
      'ingredients' => 'lait entier bio de nos chèvres, sucre, crème bio de nos chèvres, vanille Tahitensis, ' . STABILISANT],
-    ['nom' => 'Chocolat', 'ordre' => 2,  'logo' => null,
+    ['nom' => 'Chocolat', 'ordre' => 2,  'logo' => 'logo-chocolat.jpg',
      'ingredients' => 'lait entier bio de nos chèvres, chocolat, sucre, miel, ' . STABILISANT],
     ['nom' => 'Miel',     'ordre' => 3,  'logo' => 'logo-miel.png', 'recherche' => '%Miel%',
      'ingredients' => 'lait entier et crème bio de nos chèvres, miel, sucre, ' . STABILISANT],
-    ['nom' => 'Yaourt',   'ordre' => 4,  'logo' => null,
+    ['nom' => 'Yaourt',   'ordre' => 4,  'logo' => 'logo-yaourt.jpg',
      'ingredients' => 'lait entier et yaourt bio de nos chèvres, sucre, crème bio de nos chèvres, ' . STABILISANT],
     ['nom' => 'Fraise',   'ordre' => 5,  'logo' => 'logo-fraise.jpg',
      'ingredients' => 'pulpe de fraises, lait entier bio de nos chèvres, sucre, sirop de glucose maison, ' . STABILISANT],
@@ -25,7 +25,7 @@ return [
      'ingredients' => 'pulpe de mirabelles, lait entier bio de nos chèvres, sucre, sirop de glucose maison, ' . STABILISANT],
     ['nom' => 'Melon',    'ordre' => 10, 'logo' => 'logo-melon.jpg',
      'ingredients' => 'pulpe de melon, lait entier bio de nos chèvres, sucre, sirop de glucose maison, ' . STABILISANT],
-    ['nom' => 'Pomme',    'ordre' => 11, 'logo' => null,
+    ['nom' => 'Pomme',    'ordre' => 11, 'logo' => 'logo-pomme.jpg',
      'ingredients' => 'pulpe de pomme, lait entier bio de nos chèvres, sucre, sirop de glucose maison, stabilisant (farine de lin et fibres végétales)'],
     ['nom' => 'Fouace',   'ordre' => 12, 'logo' => 'logo-fouace.jpg',
      'ingredients' => 'lait bio de nos chèvres, sucre, fouace, ' . STABILISANT],

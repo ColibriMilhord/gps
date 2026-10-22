@@ -140,23 +140,24 @@ function flash(?string $msg = null, string $type = 'ok'): ?array {
 //  Envoi d'images (photo ou logo) — validation stricte
 // ------------------------------------------------------------
 /**
- * Enregistre l'image du champ $champ dans uploads/$dossier/.
- * Retourne le nom de fichier, null si aucun fichier envoyé, ou lève une exception.
+ * Enregistre l'image du champ $champ dans uploads/$dossier/, redimensionnée et recadrée automatiquement
+ * (voir includes/images.php). Retourne le nom de fichier, null si aucun fichier envoyé, ou lève une exception.
  */
 function image_enregistrer(string $champ, string $dossier): ?string {
     if (empty($_FILES[$champ]) || $_FILES[$champ]['error'] === UPLOAD_ERR_NO_FILE) return null;
     $f = $_FILES[$champ];
+    if ($f['error'] === UPLOAD_ERR_INI_SIZE || $f['error'] === UPLOAD_ERR_FORM_SIZE) throw new RuntimeException('Image trop lourde pour le serveur : réduisez-la ou envoyez une autre version.');
     if ($f['error'] !== UPLOAD_ERR_OK) throw new RuntimeException("Échec de l'envoi de l'image (code {$f['error']}).");
-    if ($f['size'] > 8 * 1024 * 1024) throw new RuntimeException('Image trop lourde (8 Mo maximum).');
-    $types = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+    if ($f['size'] > 25 * 1024 * 1024) throw new RuntimeException('Image trop lourde (25 Mo maximum).');
     $mime = (new finfo(FILEINFO_MIME_TYPE))->file($f['tmp_name']);
-    if (!isset($types[$mime]) || !@getimagesize($f['tmp_name'])) {
+    if (!in_array($mime, ['image/jpeg', 'image/png', 'image/webp'], true) || !@getimagesize($f['tmp_name'])) {
         throw new RuntimeException('Format non accepté : JPEG, PNG ou WebP uniquement.');
     }
+    require_once __DIR__ . '/images.php';
     $dir = RACINE . '/uploads/' . $dossier;
     if (!is_dir($dir) && !mkdir($dir, 0755, true)) throw new RuntimeException('Dossier uploads inaccessible.');
-    $nom = bin2hex(random_bytes(8)) . '.' . $types[$mime];
-    if (!move_uploaded_file($f['tmp_name'], "$dir/$nom")) throw new RuntimeException("Impossible d'enregistrer l'image.");
+    $nom = bin2hex(random_bytes(8)) . '.jpg';
+    image_traiter($f['tmp_name'], "$dir/$nom", $dossier === 'logos' ? 'logo' : 'photo');
     return $nom;
 }
 
@@ -232,6 +233,7 @@ function migrer_base(): void {
             $pdo->exec('ALTER TABLE glaces ADD COLUMN ingredients TEXT NULL');
             $pdo->exec('ALTER TABLE glaces ADD COLUMN poids VARCHAR(60) NULL');
         }
+        migrer_logos_v13($pdo);
         $f = $pdo->prepare("SELECT valeur FROM settings_site WHERE cle = 'catalogue_v12'"); $f->execute();
         if ($f->fetchColumn() === '1') return;
 
@@ -257,13 +259,27 @@ function migrer_base(): void {
     } catch (Throwable $e) { error_log('migration: ' . $e->getMessage()); }
 }
 
+/**
+ * 1.3.0 : logos de Vanille, Chocolat, Yaourt et Pomme. Ne touche que les parfums sans logo ; si une étiquette
+ * avait déjà été envoyée comme « photo », elle est reprise comme logo (puis la copie en doublon est retirée).
+ */
+function migrer_logos_v13(PDO $pdo): void {
+    $f = $pdo->prepare("SELECT valeur FROM settings_site WHERE cle = 'logos_v13'"); $f->execute();
+    if ($f->fetchColumn() === '1') return;
+    foreach (['Vanille' => 'logo-vanille.jpg', 'Chocolat' => 'logo-chocolat.jpg', 'Yaourt' => 'logo-yaourt.jpg', 'Pomme' => 'logo-pomme.jpg'] as $nom => $logo) {
+        $pdo->prepare("UPDATE glaces SET logo = ? WHERE nom LIKE ? AND (logo IS NULL OR logo = '')")->execute([$logo, $nom . '%']);
+    }
+    reglage_enregistrer('logos_v13', '1');
+}
+
 /** Au premier affichage public après une mise à jour, applique la migration (une requête légère ensuite). */
 function migrer_si_besoin(): void {
     static $fait = false; if ($fait) return; $fait = true;
     if (!($pdo = db())) return;
     try {
         $st = $pdo->prepare("SELECT valeur FROM settings_site WHERE cle = 'catalogue_v12'"); $st->execute();
-        if ($st->fetchColumn() === '1') return;
+        $v13 = $pdo->prepare("SELECT valeur FROM settings_site WHERE cle = 'logos_v13'"); $v13->execute();
+        if ($st->fetchColumn() === '1' && $v13->fetchColumn() === '1') return;
     } catch (Throwable $e) { /* table absente : sera créée par l'installation */ return; }
     migrer_base();
 }

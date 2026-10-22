@@ -128,7 +128,7 @@ function page_produits(string $table, string $titre, string $singulier, string $
             <label>Ordre d'affichage <input type="number" name="ordre" value="<?= $v('ordre', count($lignes) + 1) ?>"></label>
             <label class="adm-case adm-case--bas"><input type="checkbox" name="visible" value="1" <?= (!$edit || $edit['visible']) ? 'checked' : '' ?>> Visible sur le site</label>
         </div>
-        <p class="adm-aide">JPEG, PNG ou WebP, 8 Mo maximum. Le logo s'affiche sur la carte (clic pour l'agrandir) ; sans photo, le logo sert de visuel.</p>
+        <p class="adm-aide">Envoyez l'image telle quelle (JPEG, PNG ou WebP, 25 Mo maximum) : le site la recadre, la redimensionne et l'allège tout seul. Une photo est mise au format paysage ; un logo ou une étiquette est entièrement conservé, marges blanches retirées. Sans photo, le logo sert de visuel.</p>
         <button class="adm-btn"><?= $edit ? 'Mettre à jour' : 'Ajouter' ?></button>
         <?php if ($edit): ?><a class="adm-btn adm-btn--clair" href="<?= h($page) ?>">Annuler</a><?php endif; ?>
     </form>

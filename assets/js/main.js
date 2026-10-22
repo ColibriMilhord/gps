@@ -112,13 +112,17 @@
     }
     // Liens « Organiser une visite » / « Proposer nos glaces » : pas de rechargement,
     // on présélectionne le profil dans le formulaire et on y fait défiler la page.
-    function allerAuFormulaire(valeur) {
+    function allerAuFormulaire(valeur, produit) {
         var cible = document.getElementById('contact');
         if (!form || !cible) return false;
         var profil = form.querySelector('[name=profil]');
         if (valeur && profil.querySelector('option[value="' + valeur + '"]')) {
             profil.value = valeur;
             profil.dispatchEvent(new Event('change'));
+        }
+        var choix = produit && form.querySelector('[name=produit]');
+        if (choix && choix.tagName === 'SELECT') {
+            for (var i = 0; i < choix.options.length; i++) if (choix.options[i].value === produit) choix.selectedIndex = i;
         }
         cible.scrollIntoView({ behavior: reduit ? 'auto' : 'smooth', block: 'start' });
         window.setTimeout(function () { profil.focus({ preventScroll: true }); }, reduit ? 0 : 700);
@@ -127,14 +131,15 @@
     document.addEventListener('click', function (e) {
         var a = e.target.closest('a[href*="profil="]');
         if (!a) return;
-        var m = a.getAttribute('href').match(/profil=([a-z]+)/);
-        if (m && allerAuFormulaire(m[1])) e.preventDefault();
+        var href = a.getAttribute('href');
+        var m = href.match(/profil=([a-z]+)/), pr = href.match(/produit=([^&#]+)/);
+        if (m && allerAuFormulaire(m[1], pr && decodeURIComponent(pr[1]))) e.preventDefault();
     });
     // Arrivée directe avec ?profil=… : le défilement initial est faussé par les images qui se chargent, on le refait une fois la page prête
     if (/[?&]profil=/.test(location.search) && form) {
         window.addEventListener('load', function () {
-            var m = location.search.match(/profil=([a-z]+)/);
-            allerAuFormulaire(m && m[1]);
+            var m = location.search.match(/profil=([a-z]+)/), pr = location.search.match(/produit=([^&#]+)/);
+            allerAuFormulaire(m && m[1], pr && decodeURIComponent(pr[1]));
             // Les images « lazy » qui se chargent au-dessus décalent la page : on recale deux fois
             [900, 2200].forEach(function (d) {
                 window.setTimeout(function () {

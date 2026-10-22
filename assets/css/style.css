@@ -75,22 +75,47 @@ h1, h2, h3 { font-family: var(--police-titre); line-height: 1.2; color: var(--br
 .surtitre { text-transform: uppercase; letter-spacing: .18em; font-size: .8rem; font-weight: 700; color: var(--sauge-fonce); margin: 0 0 .5rem; }
 .vide { text-align: center; opacity: .7; }
 
-/* Cartes */
-.grille-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.6rem; }
-.carte { background: #fff; border-radius: var(--rayon); overflow: hidden; box-shadow: var(--ombre); display: flex; flex-direction: column; transition: transform .25s; }
-.carte:hover { transform: translateY(-5px); }
-.carte-media { position: relative; aspect-ratio: 4 / 3; background: var(--vanille); overflow: hidden; }
-.carte-media > img { width: 100%; height: 100%; object-fit: cover; }
-.carte-media--logo > img { object-fit: contain; padding: .6rem; background: #fff; }
-.carte-media .placeholder { opacity: .35; object-fit: contain; padding: 2rem; }
-.carte-logo { position: absolute; right: .6rem; bottom: .6rem; width: 62px; height: 62px; padding: 3px; border: 2px solid var(--vanille); border-radius: 50%; background: #fff; cursor: zoom-in; }
-.carte-logo img { width: 100%; height: 100%; object-fit: contain; }
-.carte-corps { padding: 1.2rem 1.3rem 1.4rem; display: flex; flex-direction: column; flex: 1; }
-.carte-corps h3 { margin-bottom: .3em; font-size: 1.3rem; }
+/* Cartes produit (glaces & bûches) : visuel généreux, teinte propre à chaque parfum (--accent) */
+.grille-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); gap: 1.8rem; }
+.grille-cartes--buches { grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 420px)); justify-content: center; }
+.carte { --accent: #8da07a; --accent-rgb: 141,160,122; position: relative; display: flex; flex-direction: column; background: #fff; border-radius: 26px; overflow: hidden;
+    box-shadow: 0 8px 26px rgba(var(--accent-rgb), .22), 0 2px 6px rgba(0,0,0,.05); transition: transform .3s, box-shadow .3s; }
+.carte:hover, .carte:focus-within { transform: translateY(-8px); box-shadow: 0 22px 46px rgba(var(--accent-rgb), .34), 0 2px 6px rgba(0,0,0,.06); }
+.carte-media { position: relative; overflow: hidden; aspect-ratio: 1 / 1; display: grid; place-items: center;
+    background: radial-gradient(circle at 50% 38%, #fff 0%, rgba(var(--accent-rgb), .20) 100%); }
+.carte--buche .carte-media { aspect-ratio: 4 / 3; }
+.carte-media > img { display: block; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+.carte-media--logo > img { width: 86%; height: 86%; object-fit: contain; background: transparent; mix-blend-mode: multiply; }
+.carte-media--photo > img { width: 100%; height: 100%; object-fit: cover; }
+.carte-media--photo::after { content: ""; position: absolute; inset: auto 0 0 0; height: 38%; background: linear-gradient(transparent, rgba(var(--accent-rgb), .35)); pointer-events: none; }
+.carte:hover .carte-media > img { transform: scale(1.07) rotate(-2deg); }
+.carte-media .placeholder { width: 60%; height: 60%; opacity: .35; object-fit: contain; mix-blend-mode: normal; }
+.carte-ruban { position: absolute; top: 1.5rem; left: -3rem; transform: rotate(-35deg); width: 12rem; text-align: center; padding: .3rem 0 .3rem 1.2rem; white-space: nowrap; background: var(--accent); color: #fff; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.carte-logo { position: absolute; right: .8rem; bottom: .8rem; z-index: 2; width: 68px; height: 68px; padding: 3px; border: 3px solid #fff; border-radius: 50%; background: #fff; cursor: zoom-in; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
+.carte-logo { overflow: hidden; }
+.carte-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.carte-corps { padding: 1.1rem 1.4rem 1.5rem; display: flex; flex-direction: column; flex: 1; }
+.carte-corps h3 { margin-bottom: .25em; font-size: 1.6rem; color: var(--brun); }
+.carte-corps h3::after { content: ""; display: block; width: 44px; height: 4px; margin-top: .45rem; border-radius: 2px; background: var(--accent); }
 .carte-corps p { margin: 0 0 .6em; font-size: .97rem; }
 .carte-parfums { color: var(--fruit); font-weight: 700; }
-.carte-parts { font-size: .88rem !important; opacity: .75; }
-.carte-prix { margin-top: auto !important; font-family: var(--police-titre); font-size: 1.35rem !important; color: var(--sauge-fonce); font-weight: 700; }
+.carte-parts { font-size: .9rem !important; font-weight: 700; }
+.carte-pied { margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem 1rem; padding-top: .8rem; }
+.carte-prix { display: inline-block; padding: .3rem .95rem; border-radius: 999px; background: rgba(var(--accent-rgb), .16); font-family: var(--police-titre); font-size: 1.3rem; font-weight: 700; color: var(--brun); }
+.carte-cta { margin-left: auto; display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; color: var(--sauge-fonce); text-decoration: none; border-bottom: 2px solid rgba(var(--accent-rgb), .6); }
+.carte-cta:hover { border-bottom-color: var(--accent); color: var(--brun); }
+.carte--buche .carte-cta { margin-left: 0; padding: .5rem 1.2rem; border: 0; border-radius: 999px; background: var(--accent); color: #fff; }
+.carte--buche .carte-cta:hover { background: #82191f; color: #fff; }
+.carte--buche { box-shadow: 0 10px 30px rgba(163,38,47,.22); border: 2px solid #f0d9a0; }
+.cta-section { text-align: center; margin: 3rem 0 0; }
+@media (max-width: 560px) {
+    .grille-cartes--glaces { grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .grille-cartes--glaces .carte { border-radius: 20px; }
+    .grille-cartes--glaces .carte-corps { padding: .8rem .8rem 1rem; }
+    .grille-cartes--glaces .carte-corps h3 { font-size: 1.2rem; }
+    .grille-cartes--glaces .carte-cta { display: none; }
+    .grille-cartes--glaces .carte-prix { font-size: 1.05rem; padding: .2rem .7rem; }
+}
 
 .grille-tarifs { max-width: 480px; margin: 3rem auto 0; background: var(--vanille); border-radius: var(--rayon); padding: 1.6rem 1.8rem; }
 .grille-tarifs h3 { text-align: center; }

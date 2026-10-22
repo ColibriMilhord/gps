@@ -5,3 +5,4 @@ uploads/logos/*
 !uploads/logos/logo-*.png
 !uploads/logos/logo-*.jpg
 !uploads/*/.gitkeep
+data/couleurs.json
