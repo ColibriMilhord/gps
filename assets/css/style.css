@@ -113,7 +113,9 @@ h1, h2, h3 { font-family: var(--police-titre); line-height: 1.2; color: var(--br
     .grille-cartes--glaces .carte { border-radius: 20px; }
     .grille-cartes--glaces .carte-corps { padding: .8rem .8rem 1rem; }
     .grille-cartes--glaces .carte-corps h3 { font-size: 1.2rem; }
-    .grille-cartes--glaces .carte-cta { display: none; }
+    .grille-cartes--glaces .carte-pied { flex-direction: column; align-items: stretch; gap: .5rem; }
+    .grille-cartes--glaces .carte-cta { margin: 0; justify-content: center; font-size: .9rem; padding: 0 .6rem; border: 2px solid rgba(var(--accent-rgb), .7); border-radius: 999px; background: rgba(var(--accent-rgb), .12); }
+    .grille-cartes--glaces .carte-prix { align-self: flex-start; }
     .grille-cartes--glaces .carte-prix { font-size: 1.05rem; padding: .2rem .7rem; }
 }
 
