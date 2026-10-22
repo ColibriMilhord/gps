@@ -53,6 +53,7 @@ function reglages(): array {
         'noel_actif' => '0', 'noel_message' => '', 'prix_mode' => 'individuel',
         'telephone' => '', 'email' => '', 'adresse' => 'Ferme du Tensonnieu, aux portes des Gorges du Tarn',
         'marches' => "Marchés d'Aveyron et de Lozère",
+        'telephone_2' => '', 'glaces_bientot' => '', 'noel_infos' => '',
     ];
     if ($pdo = db()) {
         try {
@@ -85,7 +86,7 @@ function upload_url(?string $fichier, string $type): ?string {
 //  Données publiques
 // ------------------------------------------------------------
 function produits_visibles(string $table): array {
-    if (!in_array($table, ['glaces', 'buches'], true) || !($pdo = db())) return [];
+    if (!in_array($table, ['glaces', 'buches', 'confitures'], true) || !($pdo = db())) return [];
     try {
         return $pdo->query("SELECT * FROM $table WHERE visible = 1 ORDER BY ordre, id")->fetchAll();
     } catch (Throwable $e) { error_log($e->getMessage()); return []; }
@@ -217,6 +218,7 @@ function lien_carte(array $l): ?string {
  * Met la base au niveau du code (idempotent, appelé par l'administration et au premier affichage public) :
  *  - 1.1.0 : tables lieux / partenaires / messages ;
  *  - 1.2.0 : colonnes ingrédients + poids sur les glaces, catalogue initial des parfums, coordonnées de la ferme.
+ *  - 1.4.0 : confitures de lait, tarifs particuliers / professionnels, bûches (voir migrer_v14).
  * Le catalogue n'est injecté qu'une fois (drapeau catalogue_v12) : un parfum supprimé ensuite ne revient pas.
  */
 function migrer_base(): void {
@@ -235,7 +237,7 @@ function migrer_base(): void {
         }
         migrer_logos_v13($pdo);
         $f = $pdo->prepare("SELECT valeur FROM settings_site WHERE cle = 'catalogue_v12'"); $f->execute();
-        if ($f->fetchColumn() === '1') return;
+        if ($f->fetchColumn() === '1') { migrer_v14_securisee($pdo); return; }
 
         $catalogue = require RACINE . '/includes/catalogue-initial.php';
         $cherche = $pdo->prepare('SELECT id, ingredients, logo FROM glaces WHERE nom LIKE ? ORDER BY id LIMIT 1');
@@ -256,7 +258,13 @@ function migrer_base(): void {
         $pdo->prepare("UPDATE settings_site SET valeur = ? WHERE cle = 'adresse' AND valeur LIKE 'Ferme du Tensonnieu, aux portes%'")
             ->execute(['Ferme du Tensonnieu — 12 rue Jules Ricard, 48500 Massegros Causses Gorges']);
         reglage_enregistrer('catalogue_v12', '1');
+        migrer_v14_securisee($pdo);   // après le catalogue : sur une installation neuve, les parfums existent alors
     } catch (Throwable $e) { error_log('migration: ' . $e->getMessage()); }
+}
+
+/** Une panne de la migration 1.4.0 ne doit pas empêcher le reste : on journalise et le prochain affichage réessaie. */
+function migrer_v14_securisee(PDO $pdo): void {
+    try { migrer_v14($pdo); } catch (Throwable $e) { error_log('migration 1.4.0: ' . $e->getMessage()); }
 }
 
 /**
@@ -272,6 +280,73 @@ function migrer_logos_v13(PDO $pdo): void {
     reglage_enregistrer('logos_v13', '1');
 }
 
+/**
+ * 1.4.0 : données des flyers (includes/catalogue-v14.php). Crée la table confitures et les colonnes cible/groupe des tarifs,
+ * puis ajoute ce qui manque sans jamais écraser une saisie existante. Rejouable : le drapeau catalogue_v14 n'est posé qu'à la fin.
+ */
+function migrer_v14(PDO $pdo): void {
+    $f = $pdo->prepare("SELECT valeur FROM settings_site WHERE cle = 'catalogue_v14'"); $f->execute();
+    if ($f->fetchColumn() === '1') return;
+
+    try { $pdo->query('SELECT cible, groupe FROM tarifs LIMIT 1'); }
+    catch (Throwable $e) {
+        $pdo->exec("ALTER TABLE tarifs ADD COLUMN cible VARCHAR(12) NOT NULL DEFAULT 'particulier'");
+        $pdo->exec("ALTER TABLE tarifs ADD COLUMN groupe VARCHAR(12) NOT NULL DEFAULT 'glaces'");
+    }
+    $pdo->exec("CREATE TABLE IF NOT EXISTS confitures (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        nom VARCHAR(120) NOT NULL, description TEXT NULL, ingredients TEXT NULL, poids VARCHAR(60) NULL,
+        image VARCHAR(255) NULL, logo VARCHAR(255) NULL, prix DECIMAL(6,2) NULL,
+        visible TINYINT(1) NOT NULL DEFAULT 1, ordre INT NOT NULL DEFAULT 0,
+        cree_le TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    $c = require RACINE . '/includes/catalogue-v14.php';
+    $pdo->beginTransaction();
+    try {
+        foreach ($c['tarifs_exemple'] as [$lib, $prix]) {
+            $pdo->prepare('DELETE FROM tarifs WHERE libelle = ? AND prix = ?')->execute([$lib, $prix]);
+        }
+        $existe = $pdo->prepare('SELECT COUNT(*) FROM tarifs WHERE cible = ? AND groupe = ? AND libelle = ?');
+        foreach ($c['tarifs'] as $t) {
+            $existe->execute([$t['public'], $t['groupe'], $t['libelle']]);
+            if (!(int)$existe->fetchColumn()) {
+                $pdo->prepare('INSERT INTO tarifs (libelle, prix, ordre, cible, groupe) VALUES (?, ?, ?, ?, ?)')
+                    ->execute([$t['libelle'], $t['prix'], $t['ordre'], $t['public'], $t['groupe']]);
+            }
+        }
+        $pdo->prepare('UPDATE glaces SET prix = ? WHERE prix IS NULL')->execute([$c['prix_pot_glace']]);
+
+        $cherche = $pdo->prepare('SELECT COUNT(*) FROM buches WHERE nom LIKE ?');
+        foreach ($c['buches'] as $b) {
+            $cherche->execute([$b['nom']]);
+            if (!(int)$cherche->fetchColumn()) {
+                $pdo->prepare('INSERT INTO buches (nom, description, parfums, parts, ordre, visible) VALUES (?, ?, ?, ?, ?, 1)')
+                    ->execute([$b['nom'], $b['description'], $b['parfums'], $b['parts'], $b['ordre']]);
+            }
+        }
+        $cherche = $pdo->prepare('SELECT COUNT(*) FROM confitures WHERE nom LIKE ?');
+        foreach ($c['confitures'] as $k) {
+            $cherche->execute([$k['nom']]);
+            if (!(int)$cherche->fetchColumn()) {
+                $pdo->prepare('INSERT INTO confitures (nom, description, prix, ordre, visible) VALUES (?, ?, ?, ?, 1)')
+                    ->execute([$k['nom'], $c['confiture_description'], $c['prix_confiture'], $k['ordre']]);
+            }
+        }
+        $lit = $pdo->prepare('SELECT valeur FROM settings_site WHERE cle = ?');
+        foreach ($c['reglages'] as $cle => $valeur) {
+            $lit->execute([$cle]);
+            $actuel = $lit->fetchColumn();
+            if ($actuel === false || $actuel === null || $actuel === '') reglage_enregistrer($cle, $valeur);
+        }
+        reglage_enregistrer('catalogue_v14', '1');
+        $pdo->commit();
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
+        throw $e;
+    }
+}
+
 /** Au premier affichage public après une mise à jour, applique la migration (une requête légère ensuite). */
 function migrer_si_besoin(): void {
     static $fait = false; if ($fait) return; $fait = true;
@@ -279,7 +354,8 @@ function migrer_si_besoin(): void {
     try {
         $st = $pdo->prepare("SELECT valeur FROM settings_site WHERE cle = 'catalogue_v12'"); $st->execute();
         $v13 = $pdo->prepare("SELECT valeur FROM settings_site WHERE cle = 'logos_v13'"); $v13->execute();
-        if ($st->fetchColumn() === '1' && $v13->fetchColumn() === '1') return;
+        $v14 = $pdo->prepare("SELECT valeur FROM settings_site WHERE cle = 'catalogue_v14'"); $v14->execute();
+        if ($st->fetchColumn() === '1' && $v13->fetchColumn() === '1' && $v14->fetchColumn() === '1') return;
     } catch (Throwable $e) { /* table absente : sera créée par l'installation */ return; }
     migrer_base();
 }
@@ -292,6 +368,7 @@ function profils_contact(bool $noel): array {
         'partenaire' => 'Je veux travailler avec vous',
         'visite'     => 'Je suis particulier et je veux visiter la ferme',
         'glace'      => 'Je souhaite commander des glaces',
+        'confiture'  => 'Je souhaite commander des confitures de lait',
     ];
     if ($noel) $p['buche'] = 'Je souhaite commander une bûche de Noël';
     $p['autre'] = 'Autre demande';

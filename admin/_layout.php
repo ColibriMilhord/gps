@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../includes/bootstrap.php';
 
 function admin_entete(string $titre, string $actif = ''): void {
-    $menu = ['index' => 'Tableau de bord', 'glaces' => 'Glaces', 'buches' => 'Bûches de Noël', 'tarifs' => 'Grille tarifaire', 'lieux' => 'Où nous retrouver', 'partenaires' => 'Partenaires', 'messages' => 'Messages'];
+    $menu = ['index' => 'Tableau de bord', 'glaces' => 'Glaces', 'confitures' => 'Confitures', 'buches' => 'Bûches de Noël', 'tarifs' => 'Grille tarifaire', 'lieux' => 'Où nous retrouver', 'partenaires' => 'Partenaires', 'messages' => 'Messages'];
     $f = flash();
     ?><!DOCTYPE html>
 <html lang="fr"><head>

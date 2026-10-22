@@ -9,6 +9,8 @@ function contact_traiter(bool $noel): array {
     foreach (['profil', 'nom', 'email', 'telephone', 'etablissement', 'produit', 'date_souhaitee', 'message'] as $c) {
         $v[$c] = trim((string)($_POST[$c] ?? ''));
     }
+    if ($v['profil'] === 'confiture') $v['produit'] = trim((string)($_POST['produit_confiture'] ?? ''));   // deux listes de produits selon le profil
+    elseif ($v['profil'] !== 'buche') $v['produit'] = '';
     $err = [];
     if (!isset($profils[$v['profil']])) $err['profil'] = 'Choisissez ce qui vous décrit le mieux.';
     if ($v['nom'] === '') $err['nom'] = 'Indiquez votre nom.';
@@ -56,7 +58,7 @@ function contact_notifier(array $v, string $profilLibelle): void {
 }
 
 /** Affiche le formulaire. */
-function contact_afficher(bool $noel, array $buches, array $res = []): void {
+function contact_afficher(bool $noel, array $buches, array $res = [], array $confitures = []): void {
     $err = $res['erreurs'] ?? [];
     $v = $res['valeurs'] ?? [];
     $val = fn($c) => h($v[$c] ?? '');
@@ -111,7 +113,19 @@ function contact_afficher(bool $noel, array $buches, array $res = []): void {
         </div>
         <?php endif; ?>
 
-        <div class="champ" data-pour="visite buche glace">
+        <?php if ($confitures): ?>
+        <div class="champ" data-pour="confiture">
+            <label for="c-confiture">Quelle confiture de lait ?</label>
+            <select id="c-confiture" name="produit_confiture">
+                <option value="">Je précise dans mon message</option>
+                <?php foreach ($confitures as $k): ?>
+                    <option value="<?= h($k['nom']) ?>" <?= ($v['produit'] ?? '') === $k['nom'] ? 'selected' : '' ?>><?= h($k['nom']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <?php endif; ?>
+
+        <div class="champ" data-pour="visite buche glace confiture">
             <label for="c-date">Date souhaitée</label>
             <input id="c-date" name="date_souhaitee" value="<?= $val('date_souhaitee') ?>" placeholder="ex. samedi 20 décembre, ou « courant juillet »">
         </div>
@@ -121,7 +135,7 @@ function contact_afficher(bool $noel, array $buches, array $res = []): void {
             <textarea id="c-msg" name="message" rows="5" required<?= $d('message') ?>><?= $val('message') ?></textarea><?= $e('message') ?>
             <p class="aide" data-pour="restaurant boutique partenaire">Précisez vos volumes, vos parfums préférés, votre zone de livraison…</p>
             <p class="aide" data-pour="visite">Indiquez le nombre de personnes et vos disponibilités.</p>
-            <p class="aide" data-pour="glace buche">Indiquez parfums, quantités et le jour de retrait souhaité.</p>
+            <p class="aide" data-pour="glace buche confiture">Indiquez parfums, quantités et le jour de retrait souhaité.</p>
         </div>
 
         <div class="champ champ--case">

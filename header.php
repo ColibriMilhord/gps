@@ -30,7 +30,7 @@ $ogImage = SITE_URL . '/assets/img/hero-poster.jpg';
     <script type="application/ld+json"><?= json_encode([
         '@context' => 'https://schema.org', '@type' => 'LocalBusiness',
         'name' => 'GAEC du Point Sublime — Les Sublimes', 'url' => SITE_URL,
-        'description' => 'Glaces artisanales au lait de chèvre, Ferme du Tensonnieu (Gorges du Tarn).',
+        'description' => 'Glaces artisanales, confitures de lait et bûches glacées au lait de chèvre, Ferme du Tensonnieu (Gorges du Tarn).',
         'image' => $ogImage, 'address' => $R['adresse'] ?? '',
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?></script>
 </head>
@@ -45,7 +45,9 @@ $ogImage = SITE_URL . '/assets/img/hero-poster.jpg';
     <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-principal"><span></span><span></span><span></span></button>
     <nav id="nav-principal" class="nav-principal" aria-label="Navigation principale">
         <a href="./#glaces">Nos glaces</a>
+        <a href="./#confitures">Confitures de lait</a>
         <?php if ($noel): ?><a href="./#buches" class="nav-noel">🎄 Bûches de Noël</a><?php endif; ?>
+        <a href="./#pros">Professionnels</a>
         <a href="./#ferme">Notre histoire</a>
         <a href="./#retrouver">Nous retrouver</a>
         <a href="./#contact" class="nav-contact">Contact</a>

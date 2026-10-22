@@ -24,3 +24,11 @@ Incrémenter `version.php` à chaque modification visible.
 - **Partenaires** (admin > Partenaires) : boutiques/restaurants qui vendent les glaces.
 - **Formulaire de contact** avec profils (restaurant, boutique, partenaire, visite, commande de glaces, bûche si Noël actif) ; messages dans admin > Messages + e-mail de notification si un courriel est renseigné.
 - Mise à jour d'une base 1.0 : automatique à la première connexion à l'admin (ou importer `sql/migration-1.1.0.sql`).
+
+## v1.4.0 — flyers du GAEC intégrés
+- **Confitures de lait** (admin > Confitures) : nature, vanille, noisette, chocolat. Section « Nos confitures de lait de chèvre » sur l'accueil, lien dans le menu et le bouton d'accueil, profil « commander des confitures » dans le formulaire.
+- **Grille tarifaire** particuliers / professionnels (prix pros TTC), par produit (glaces, confitures). Particuliers : sous les glaces ; professionnels : section « Boutiques, restaurants, épiceries ».
+- **Bûches de Noël** : La Fruitée, La Tout Choco, La Pomme de Pain (visibles quand le mode Noël est actif). Infos de commande (retrait, livraison) dans le tableau de bord.
+- Section « Du champ à la cuillère » (engagements des flyers), second téléphone, parfums à venir.
+- Mise à jour de la base **automatique** au premier affichage (`migrer_v14`, sans écraser les saisies existantes ; données dans `includes/catalogue-v14.php`).
+

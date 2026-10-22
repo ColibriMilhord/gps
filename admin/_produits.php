@@ -158,10 +158,10 @@ function page_produits(string $table, string $titre, string $singulier, string $
     admin_pied();
 }
 
-/** Supprime un logo du disque seulement si plus aucune glace/bûche ne l'utilise. */
+/** Supprime un logo du disque seulement si plus aucun produit ne l'utilise. */
 function logo_supprimer_si_orphelin(PDO $pdo, ?string $logo): void {
     if (!$logo) return;
-    foreach (['glaces', 'buches'] as $t) {
+    foreach (['glaces', 'buches', 'confitures'] as $t) {
         $st = $pdo->prepare("SELECT COUNT(*) FROM $t WHERE logo = ?"); $st->execute([$logo]);
         if ((int)$st->fetchColumn() > 0) return;
     }

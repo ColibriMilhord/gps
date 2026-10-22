@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         reglage_enregistrer('noel_actif', !empty($_POST['noel_actif']) ? '1' : '0');
         $mode = $_POST['prix_mode'] ?? 'individuel';
         reglage_enregistrer('prix_mode', in_array($mode, ['individuel', 'grille', 'aucun'], true) ? $mode : 'individuel');
-        foreach (['noel_message', 'telephone', 'email', 'adresse', 'marches'] as $c) {
+        foreach (['noel_message', 'noel_infos', 'telephone', 'telephone_2', 'email', 'adresse', 'marches', 'glaces_bientot'] as $c) {
             reglage_enregistrer($c, mb_substr(trim((string)($_POST[$c] ?? '')), 0, 500));
         }
         flash('Paramètres enregistrés.');
@@ -24,6 +24,7 @@ admin_entete('Tableau de bord', 'index');
 ?>
 <div class="adm-stats">
     <a class="adm-carte" href="glaces.php"><strong><?= $n('glaces') ?></strong> parfum(s) de glace</a>
+    <a class="adm-carte" href="confitures.php"><strong><?= $n('confitures') ?></strong> confiture(s) de lait</a>
     <a class="adm-carte" href="buches.php"><strong><?= $n('buches') ?></strong> bûche(s)</a>
     <a class="adm-carte" href="tarifs.php"><strong><?= $n('tarifs') ?></strong> ligne(s) de tarif</a>
     <a class="adm-carte" href="lieux.php"><strong><?= $n('lieux') ?></strong> rendez-vous</a>
@@ -41,20 +42,24 @@ admin_entete('Tableau de bord', 'index');
     </label>
     <label>Message affiché au-dessus des bûches
         <textarea name="noel_message" rows="2"><?= h($R['noel_message']) ?></textarea></label>
+    <label>Infos de commande des bûches (retrait, livraison…)
+        <textarea name="noel_infos" rows="2"><?= h($R['noel_infos']) ?></textarea></label>
 
     <h2>💶 Affichage des prix</h2>
     <fieldset>
-        <label class="adm-radio"><input type="radio" name="prix_mode" value="individuel" <?= $R['prix_mode'] === 'individuel' ? 'checked' : '' ?>> Prix affiché sur chaque glace / bûche</label>
-        <label class="adm-radio"><input type="radio" name="prix_mode" value="grille" <?= $R['prix_mode'] === 'grille' ? 'checked' : '' ?>> Grille tarifaire générale (<a href="tarifs.php">à gérer ici</a>)</label>
+        <label class="adm-radio"><input type="radio" name="prix_mode" value="individuel" <?= $R['prix_mode'] === 'individuel' ? 'checked' : '' ?>> Prix affiché sur chaque produit, en plus de la grille tarifaire</label>
+        <label class="adm-radio"><input type="radio" name="prix_mode" value="grille" <?= $R['prix_mode'] === 'grille' ? 'checked' : '' ?>> Grille tarifaire seule, sans prix sur les cartes (<a href="tarifs.php">à gérer ici</a>)</label>
         <label class="adm-radio"><input type="radio" name="prix_mode" value="aucun" <?= $R['prix_mode'] === 'aucun' ? 'checked' : '' ?>> Ne pas afficher de prix</label>
     </fieldset>
 
     <h2>📍 Coordonnées</h2>
     <div class="adm-grille2">
-        <label>Téléphone <input name="telephone" value="<?= h($R['telephone']) ?>"></label>
+        <label>Téléphone (Delphine) <input name="telephone" value="<?= h($R['telephone']) ?>"></label>
+        <label>Second téléphone (Christian) <input name="telephone_2" value="<?= h($R['telephone_2']) ?>"></label>
         <label>Courriel (reçoit aussi les messages du formulaire de contact) <input type="email" name="email" value="<?= h($R['email']) ?>"></label>
         <label>Adresse <input name="adresse" value="<?= h($R['adresse']) ?>"></label>
         <label>Marchés <input name="marches" value="<?= h($R['marches']) ?>"></label>
+        <label>Parfums à venir (affichés sous les glaces) <input name="glaces_bientot" value="<?= h($R['glaces_bientot']) ?>" placeholder="ex. reine des prés, citron"></label>
     </div>
     <button class="adm-btn">Enregistrer</button>
 </form>

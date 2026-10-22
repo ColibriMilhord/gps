@@ -1,6 +1,7 @@
 config.local.php
 uploads/glaces/*
 uploads/buches/*
+uploads/confitures/*
 uploads/logos/*
 !uploads/logos/logo-*.png
 !uploads/logos/logo-*.jpg

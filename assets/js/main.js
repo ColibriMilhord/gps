@@ -120,10 +120,9 @@
             profil.value = valeur;
             profil.dispatchEvent(new Event('change'));
         }
-        var choix = produit && form.querySelector('[name=produit]');
-        if (choix && choix.tagName === 'SELECT') {
+        if (produit) form.querySelectorAll('select[name=produit], select[name=produit_confiture]').forEach(function (choix) {
             for (var i = 0; i < choix.options.length; i++) if (choix.options[i].value === produit) choix.selectedIndex = i;
-        }
+        });
         cible.scrollIntoView({ behavior: reduit ? 'auto' : 'smooth', block: 'start' });
         window.setTimeout(function () { profil.focus({ preventScroll: true }); }, reduit ? 0 : 700);
         return true;
