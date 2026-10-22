@@ -60,7 +60,9 @@ CREATE TABLE IF NOT EXISTS tarifs (
     id      INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     libelle VARCHAR(120) NOT NULL,
     prix    DECIMAL(6,2) NOT NULL,
-    ordre   INT NOT NULL DEFAULT 0
+    ordre   INT NOT NULL DEFAULT 0,
+    cible   VARCHAR(12) NOT NULL DEFAULT 'particulier',   -- particulier | pro (prix pros TTC)
+    groupe  VARCHAR(12) NOT NULL DEFAULT 'glaces'         -- glaces | confitures
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Paramètres du site (clé / valeur)
@@ -131,4 +133,22 @@ CREATE TABLE IF NOT EXISTS messages (
     lu            TINYINT(1) NOT NULL DEFAULT 0,
     cree_le       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     KEY idx_ip_date (ip, cree_le)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+--  v1.4.0 — confitures de lait de chèvre (même logique que les glaces)
+--  Les tarifs, bûches et confitures des flyers sont injectés au premier affichage : voir includes/catalogue-v14.php
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS confitures (
+    id          INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nom         VARCHAR(120) NOT NULL,
+    description TEXT NULL,
+    ingredients TEXT NULL,
+    poids       VARCHAR(60) NULL,
+    image       VARCHAR(255) NULL,
+    logo        VARCHAR(255) NULL,
+    prix        DECIMAL(6,2) NULL,
+    visible     TINYINT(1) NOT NULL DEFAULT 1,
+    ordre       INT NOT NULL DEFAULT 0,
+    cree_le     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

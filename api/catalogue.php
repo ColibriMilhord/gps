@@ -21,6 +21,7 @@ $mapper = function (array $l, string $dossier) use ($mode) {
 echo json_encode([
     'noel' => $noel, 'noel_message' => $noel ? $R['noel_message'] : null, 'prix_mode' => $mode,
     'glaces' => array_map(fn($l) => $mapper($l, 'glaces'), produits_visibles('glaces')),
+    'confitures' => array_map(fn($l) => $mapper($l, 'confitures'), produits_visibles('confitures')),
     'buches' => $noel ? array_map(fn($l) => $mapper($l, 'buches'), produits_visibles('buches')) : [],
-    'tarifs' => $mode === 'grille' ? array_map(fn($t) => ['libelle' => $t['libelle'], 'prix' => (float)$t['prix']], grille_tarifs()) : [],
+    'tarifs' => $mode !== 'aucun' ? array_map(fn($t) => ['libelle' => $t['libelle'], 'prix' => (float)$t['prix'], 'cible' => $t['cible'] ?? 'particulier', 'groupe' => $t['groupe'] ?? 'glaces'], grille_tarifs()) : [],
 ], JSON_UNESCAPED_UNICODE);
